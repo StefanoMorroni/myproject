@@ -15,6 +15,7 @@
                         <input tabindex="1" id="username" class="form-control" name="email" value=""  type="text" autofocus autocomplete="off" placeholder="${msg("usernameOrEmail")}" />
                     </div>
 
+                    <#if passwordRequired??>
                     <div class="form-group">
                         <input tabindex="2" id="password" class="form-control" name="password" type="password" autocomplete="off" placeholder="${msg("password")}" />
                     </div>
@@ -22,6 +23,7 @@
                     <div class="form-group">
                         <input tabindex="3" id="password-confirm" class="form-control" name="password-confirm" type="password" autocomplete="off" placeholder="${msg("passwordConfirm")}" />
                     </div>
+                    </#if>
 
                     <div cssclass="form-control ng-pristine ng-valid ng-empty ng-valid-email ng-touched">
                         <label for="" id="termsLabel" style="display: block; text-align: center;">Cliccando su "Registrati" dichiari di aver preso visione della&nbsp;<a href="${url.resourcesPath}/privacy.pdf" target="_blank">informativa privacy</a>&nbsp;&nbsp;&nbsp;
