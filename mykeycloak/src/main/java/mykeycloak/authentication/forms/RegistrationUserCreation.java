@@ -41,6 +41,14 @@ import org.keycloak.services.validation.Validation;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.List;
+import org.jboss.logging.Logger;
+import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
+import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
+import org.keycloak.broker.provider.BrokeredIdentityContext;
+import org.keycloak.models.FederatedIdentityModel;
+import org.keycloak.models.IdentityProviderModel;
+import org.keycloak.models.utils.KeycloakModelUtils;
+import org.keycloak.services.managers.AuthenticationManager;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -49,6 +57,7 @@ import java.util.List;
 public class RegistrationUserCreation implements FormAction, FormActionFactory {
 
     public static final String PROVIDER_ID = "my-registration-user-creation";
+    private static final Logger logger = Logger.getLogger(RegistrationUserCreation.class);
 
     @Override
     public String getHelpText() {
@@ -146,6 +155,16 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
         String authType = context.getAuthenticationSession().getAuthNote(Details.AUTH_TYPE);
         if (authType != null) {
             context.getEvent().detail(Details.AUTH_TYPE, authType);
+        }
+
+        try {
+            SerializedBrokeredIdentityContext serializedCtx = SerializedBrokeredIdentityContext.readFromAuthenticationSession(context.getAuthenticationSession(), AbstractIdpAuthenticator.BROKERED_CONTEXT_NOTE);
+            BrokeredIdentityContext brokeredIdentityContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
+            FederatedIdentityModel federatedIdentityModel = new FederatedIdentityModel(brokeredIdentityContext.getIdpConfig().getAlias(), brokeredIdentityContext.getId(),
+                    brokeredIdentityContext.getUsername(), brokeredIdentityContext.getToken());
+            context.getSession().users().addFederatedIdentity(context.getRealm(), user, federatedIdentityModel);
+            logger.info("all'utente "+user+" ho aggiunto l'identità federata -> "+federatedIdentityModel);
+        } catch (Exception e) {
         }
     }
 
