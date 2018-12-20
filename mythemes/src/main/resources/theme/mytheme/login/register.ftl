@@ -12,7 +12,7 @@
                     <input type="hidden" id="lastName" name="lastName" value="N/A">
 
                     <div class="form-group">
-                        <input tabindex="1" id="username" class="form-control" name="email" value=""  type="text" autofocus autocomplete="off" placeholder="${msg("usernameOrEmail")}" />
+                        <input tabindex="1" id="username" class="form-control" name="username" value=""  type="text" autofocus autocomplete="off" placeholder="${msg("usernameOrEmail")}" />
                     </div>
 
                     <#if passwordRequired??>

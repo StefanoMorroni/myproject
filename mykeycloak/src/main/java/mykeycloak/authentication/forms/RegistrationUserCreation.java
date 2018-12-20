@@ -130,20 +130,26 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
     @Override
     public void success(FormContext context) {
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
-        String email = formData.getFirst(Validation.FIELD_EMAIL);
         String username = formData.getFirst(RegistrationPage.FIELD_USERNAME);
-        if (context.getRealm().isRegistrationEmailAsUsername()) {
-            username = formData.getFirst(RegistrationPage.FIELD_EMAIL);
-        }
+        String email = formData.getFirst(Validation.FIELD_EMAIL);
+		if (username.contains("@")) {
+			email = username;
+		}
         context.getEvent().detail(Details.USERNAME, username)
                 .detail(Details.REGISTER_METHOD, "form")
                 .detail(Details.EMAIL, email)
         ;
         UserModel user = context.getSession().users().addUser(context.getRealm(), username);
+		logger.info("creo l'utente "+user.getUsername());
         user.setEnabled(true);
-
         user.setEmail(email);
-        context.getAuthenticationSession().setClientNote(OIDCLoginProtocol.LOGIN_HINT_PARAM, username);
+		if (username.contains("@")) {
+			logger.info("all'utente "+user.getUsername()+" imposto la required action "+UserModel.RequiredAction.VERIFY_EMAIL);
+			user.addRequiredAction(UserModel.RequiredAction.VERIFY_EMAIL);			
+		}
+		//user.addRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD);
+
+		context.getAuthenticationSession().setClientNote(OIDCLoginProtocol.LOGIN_HINT_PARAM, username);
         AttributeFormDataProcessor.process(formData, context.getRealm(), user);
         context.setUser(user);
         context.getEvent().user(user);
@@ -156,14 +162,14 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
         if (authType != null) {
             context.getEvent().detail(Details.AUTH_TYPE, authType);
         }
-
+		
         try {
             SerializedBrokeredIdentityContext serializedCtx = SerializedBrokeredIdentityContext.readFromAuthenticationSession(context.getAuthenticationSession(), AbstractIdpAuthenticator.BROKERED_CONTEXT_NOTE);
             BrokeredIdentityContext brokeredIdentityContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
             FederatedIdentityModel federatedIdentityModel = new FederatedIdentityModel(brokeredIdentityContext.getIdpConfig().getAlias(), brokeredIdentityContext.getId(),
                     brokeredIdentityContext.getUsername(), brokeredIdentityContext.getToken());
             context.getSession().users().addFederatedIdentity(context.getRealm(), user, federatedIdentityModel);
-            logger.info("all'utente "+user+" ho aggiunto l'identità federata -> "+federatedIdentityModel);
+            logger.info("all'utente "+user.getUsername()+" ho aggiunto l'identità federata -> "+federatedIdentityModel.getUserName());
         } catch (Exception e) {
         }
     }
