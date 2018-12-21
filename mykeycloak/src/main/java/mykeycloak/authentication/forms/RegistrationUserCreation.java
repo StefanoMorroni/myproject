@@ -46,9 +46,6 @@ import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticato
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.models.FederatedIdentityModel;
-import org.keycloak.models.IdentityProviderModel;
-import org.keycloak.models.utils.KeycloakModelUtils;
-import org.keycloak.services.managers.AuthenticationManager;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -75,50 +72,50 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
         List<FormMessage> errors = new ArrayList<>();
         context.getEvent().detail(Details.REGISTER_METHOD, "form");
 
-        String email = formData.getFirst(Validation.FIELD_EMAIL);
         String username = formData.getFirst(RegistrationPage.FIELD_USERNAME);
+        String email = formData.getFirst(Validation.FIELD_EMAIL);
+		if (email==null && username.contains("@")) {
+			email = username;
+		}		
         context.getEvent().detail(Details.USERNAME, username);
         context.getEvent().detail(Details.EMAIL, email);
 
-        String usernameField = RegistrationPage.FIELD_USERNAME;
-        if (context.getRealm().isRegistrationEmailAsUsername()) {
-            context.getEvent().detail(Details.USERNAME, email);
 
-            if (Validation.isBlank(email)) {
-                errors.add(new FormMessage(RegistrationPage.FIELD_EMAIL, Messages.MISSING_EMAIL));
-            } else if (!Validation.isEmailValid(email)) {
-                errors.add(new FormMessage(RegistrationPage.FIELD_EMAIL, Messages.INVALID_EMAIL));
-                formData.remove(Validation.FIELD_EMAIL);
-            }
-            if (errors.size() > 0) {
-                context.error(Errors.INVALID_REGISTRATION);
-                context.validationError(formData, errors);
-                return;
-            }
-            if (email != null && !context.getRealm().isDuplicateEmailsAllowed() && context.getSession().users().getUserByEmail(email, context.getRealm()) != null) {
-                context.error(Errors.EMAIL_IN_USE);
-                formData.remove(Validation.FIELD_EMAIL);
-                errors.add(new FormMessage(RegistrationPage.FIELD_EMAIL, Messages.EMAIL_EXISTS));
-                context.validationError(formData, errors);
-                return;
-            }
-        } else {
-            if (Validation.isBlank(username)) {
-                context.error(Errors.INVALID_REGISTRATION);
-                errors.add(new FormMessage(RegistrationPage.FIELD_USERNAME, Messages.MISSING_USERNAME));
-                context.validationError(formData, errors);
-                return;
-            }
+		// controllo la validità dello username
+		if (Validation.isBlank(username)) {
+			context.error(Errors.INVALID_REGISTRATION);
+			errors.add(new FormMessage(RegistrationPage.FIELD_USERNAME, Messages.MISSING_USERNAME));
+			context.validationError(formData, errors);
+			return;
+		}
 
-            if (context.getSession().users().getUserByUsername(username, context.getRealm()) != null) {
-                context.error(Errors.USERNAME_IN_USE);
-                errors.add(new FormMessage(usernameField, Messages.USERNAME_EXISTS));
-                formData.remove(Validation.FIELD_USERNAME);
-                context.validationError(formData, errors);
-                return;
-            }
+		if (context.getSession().users().getUserByUsername(username, context.getRealm()) != null) {
+			context.error(Errors.USERNAME_IN_USE);
+			errors.add(new FormMessage(RegistrationPage.FIELD_USERNAME, Messages.USERNAME_EXISTS));
+			formData.remove(Validation.FIELD_USERNAME);
+			context.validationError(formData, errors);
+			return;
+		}
+		
+		// controllo la validità della mail
+		if (email != null && !Validation.isEmailValid(email)) {
+			errors.add(new FormMessage(RegistrationPage.FIELD_EMAIL, Messages.INVALID_EMAIL));
+			formData.remove(Validation.FIELD_EMAIL);
+		}
+		
+		if (errors.size() > 0) {
+			context.error(Errors.INVALID_REGISTRATION);
+			context.validationError(formData, errors);
+			return;
+		}
+		if (email != null && !context.getRealm().isDuplicateEmailsAllowed() && context.getSession().users().getUserByEmail(email, context.getRealm()) != null) {
+			context.error(Errors.EMAIL_IN_USE);
+			formData.remove(Validation.FIELD_EMAIL);
+			errors.add(new FormMessage(RegistrationPage.FIELD_EMAIL, Messages.EMAIL_EXISTS));
+			context.validationError(formData, errors);
+			return;
+		}
 
-        }
         context.success();
     }
 
@@ -132,7 +129,7 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         String username = formData.getFirst(RegistrationPage.FIELD_USERNAME);
         String email = formData.getFirst(Validation.FIELD_EMAIL);
-		if (username.contains("@")) {
+		if (email==null && username.contains("@")) {
 			email = username;
 		}
         context.getEvent().detail(Details.USERNAME, username)
@@ -143,11 +140,15 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
 		logger.info("creo l'utente "+user.getUsername());
         user.setEnabled(true);
         user.setEmail(email);
-		if (username.contains("@")) {
-			logger.info("all'utente "+user.getUsername()+" imposto la required action "+UserModel.RequiredAction.VERIFY_EMAIL);
-			user.addRequiredAction(UserModel.RequiredAction.VERIFY_EMAIL);			
+		if (email!=null) {
+			logger.info("all'utente "+user.getUsername()+" imposto la required action -> "+UserModel.RequiredAction.VERIFY_EMAIL);
+			user.addRequiredAction(UserModel.RequiredAction.VERIFY_EMAIL);
+			logger.info("all'utente "+user.getUsername()+" imposto la required action "+UserModel.RequiredAction.UPDATE_PASSWORD);
+			user.addRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD);
+		} else {
+			logger.info("all'utente "+user.getUsername()+" imposto la required action "+UserModel.RequiredAction.UPDATE_PASSWORD);
+			user.addRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD);
 		}
-		//user.addRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD);
 
 		context.getAuthenticationSession().setClientNote(OIDCLoginProtocol.LOGIN_HINT_PARAM, username);
         AttributeFormDataProcessor.process(formData, context.getRealm(), user);
