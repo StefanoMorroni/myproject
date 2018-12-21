@@ -111,7 +111,9 @@ public class RegistrationProfile implements FormAction, FormActionFactory {
 
     @Override
     public void buildPage(FormContext context, LoginFormsProvider form) {
-        // complete
+        form.setAttribute("firstNameRequired", true);
+        form.setAttribute("lastNameRequired", true);
+        form.setAttribute("emailRequired", true);
     }
 
     @Override

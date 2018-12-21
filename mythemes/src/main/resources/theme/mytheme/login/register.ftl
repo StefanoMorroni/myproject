@@ -8,12 +8,27 @@
             </div>
             <div class="login-container">
                 <form id="kc-register-form" action="${url.registrationAction}" method="post">
-                    <input type="hidden" id="firstName" name="firstName" value="N/A">
-                    <input type="hidden" id="lastName" name="lastName" value="N/A">
-
                     <div class="form-group">
                         <input tabindex="1" id="username" class="form-control" name="username" value=""  type="text" autofocus autocomplete="off" placeholder="${msg("usernameOrEmail")}" />
                     </div>
+
+                    <#if firstNameRequired??>
+                    <div class="form-group">
+                        <input tabindex="1" id="firstName" class="form-control" name="firstName" value=""  type="text" autofocus autocomplete="off" placeholder="${msg("firstName")}" />
+                    </div>
+                    </#if>
+
+                    <#if lastNameRequired??>
+                    <div class="form-group">
+                        <input tabindex="1" id="lastName" class="form-control" name="lastName" value=""  type="text" autofocus autocomplete="off" placeholder="${msg("lastName")}" />
+                    </div>
+                    </#if>
+
+                    <#if emailRequired??>
+                    <div class="form-group">
+                        <input tabindex="1" id="email" class="form-control" name="email" value=""  type="text" autofocus autocomplete="off" placeholder="${msg("email")}" />
+                    </div>
+                    </#if>
 
                     <#if passwordRequired??>
                     <div class="form-group">
