@@ -57,7 +57,6 @@ public class AddSocialForm
 		implements Authenticator {
 
 	private static final Logger logger = Logger.getLogger(AddSocialForm.class);
-	public static final String CREDENTIAL_TYPE = "add_social";
 
 	@Override
 	public void authenticate(AuthenticationFlowContext context) {
