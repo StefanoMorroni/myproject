@@ -30,12 +30,12 @@ import org.keycloak.services.managers.AuthenticationManager;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import mykeycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
 import org.keycloak.models.ModelDuplicateException;
-import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.services.messages.Messages;
 
 /**
@@ -80,7 +80,7 @@ public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator impl
 
         UserModel user = null;
         try {
-            user = KeycloakModelUtils.findUserByNameOrEmail(context.getSession(), context.getRealm(), username);
+            user = KeycloakModelUtils.findUserByUsernameEmailOrMobile(context.getSession(), context.getRealm(), username);
         } catch (ModelDuplicateException mde) {
             ServicesLogger.LOGGER.modelDuplicateException(mde);
 

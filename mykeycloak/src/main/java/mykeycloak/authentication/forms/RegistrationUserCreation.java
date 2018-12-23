@@ -46,6 +46,7 @@ import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticato
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.models.FederatedIdentityModel;
+import mykeycloak.models.utils.KeycloakModelUtils;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -73,15 +74,17 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
         context.getEvent().detail(Details.REGISTER_METHOD, "form");
 
         String username = formData.getFirst(RegistrationPage.FIELD_USERNAME);
-        String email = formData.getFirst(Validation.FIELD_EMAIL);
-		if (email==null && username.contains("@")) {
+        String email = null; //formData.getFirst(Validation.FIELD_EMAIL);
+		String mobile = null;
+		if (username.contains("@")) {
 			email = username;
-		}		
+		} else {
+			mobile = username;			
+		}
         context.getEvent().detail(Details.USERNAME, username);
         context.getEvent().detail(Details.EMAIL, email);
 
 
-		// controllo la validità dello username
 		if (Validation.isBlank(username)) {
 			context.error(Errors.INVALID_REGISTRATION);
 			errors.add(new FormMessage(RegistrationPage.FIELD_USERNAME, Messages.MISSING_USERNAME));
@@ -101,13 +104,11 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
 		if (email != null && !Validation.isEmailValid(email)) {
 			errors.add(new FormMessage(RegistrationPage.FIELD_EMAIL, Messages.INVALID_EMAIL));
 			formData.remove(Validation.FIELD_EMAIL);
-		}
-		
-		if (errors.size() > 0) {
 			context.error(Errors.INVALID_REGISTRATION);
 			context.validationError(formData, errors);
 			return;
 		}
+		
 		if (email != null && !context.getRealm().isDuplicateEmailsAllowed() && context.getSession().users().getUserByEmail(email, context.getRealm()) != null) {
 			context.error(Errors.EMAIL_IN_USE);
 			formData.remove(Validation.FIELD_EMAIL);
@@ -115,9 +116,33 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
 			context.validationError(formData, errors);
 			return;
 		}
+		
+		if (mobile != null) {
+			if (!isMobileValid(mobile)) {
+				errors.add(new FormMessage(RegistrationPage.FIELD_USERNAME, "mobile errato"));
+				context.error(Errors.INVALID_REGISTRATION);
+				context.validationError(formData, errors);
+				return;
+			}
+			if (KeycloakModelUtils.findUserByUsernameEmailOrMobile(context.getSession(), context.getRealm(), username)!=null) {
+				errors.add(new FormMessage(RegistrationPage.FIELD_USERNAME, "mobile duplicato"));
+				context.error(Errors.INVALID_REGISTRATION);
+				context.validationError(formData, errors);
+				return;				
+			}
+		}
 
         context.success();
     }
+	
+	public boolean isMobileValid(String mobile) {
+		try {
+			Long n = new Long(mobile);
+			return true;			
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
     @Override
     public void buildPage(FormContext context, LoginFormsProvider form) {

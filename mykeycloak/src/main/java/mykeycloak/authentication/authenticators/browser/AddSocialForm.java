@@ -27,6 +27,7 @@ import org.keycloak.models.UserModel;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import mykeycloak.models.utils.KeycloakModelUtils;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.keycloak.authentication.AuthenticationFlowError;
@@ -41,7 +42,6 @@ import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.FederatedIdentityModel;
 import org.keycloak.models.ModelDuplicateException;
 import org.keycloak.models.UserCredentialModel;
-import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.managers.AuthenticationManager;
@@ -66,7 +66,7 @@ public class AddSocialForm
 			SerializedBrokeredIdentityContext serializedCtx = SerializedBrokeredIdentityContext.readFromAuthenticationSession(context.getAuthenticationSession(), AbstractIdpAuthenticator.BROKERED_CONTEXT_NOTE);
 			BrokeredIdentityContext brokeredIdentityContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
 			String _username = brokeredIdentityContext.getEmail();
-			UserModel _user = KeycloakModelUtils.findUserByNameOrEmail(context.getSession(), context.getRealm(), _username);
+			UserModel _user = KeycloakModelUtils.findUserByUsernameEmailOrMobile(context.getSession(), context.getRealm(), _username);
 			if (_user != null) {
 				logger.info("username = "+_username);
 				loginFormsProvider.setAttribute(AuthenticationManager.FORM_USERNAME, _username);
@@ -116,7 +116,7 @@ public class AddSocialForm
 
 		UserModel user = null;
 		try {
-			user = KeycloakModelUtils.findUserByNameOrEmail(context.getSession(), context.getRealm(), username);
+			user = KeycloakModelUtils.findUserByUsernameEmailOrMobile(context.getSession(), context.getRealm(), username);
 		} catch (ModelDuplicateException mde) {
 			ServicesLogger.LOGGER.modelDuplicateException(mde);
 
