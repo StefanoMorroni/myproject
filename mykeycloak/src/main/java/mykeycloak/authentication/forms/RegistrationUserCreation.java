@@ -153,10 +153,13 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
     public void success(FormContext context) {
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         String username = formData.getFirst(RegistrationPage.FIELD_USERNAME);
-        String email = formData.getFirst(Validation.FIELD_EMAIL);
-		if (email==null && username.contains("@")) {
+        String email = null; //formData.getFirst(Validation.FIELD_EMAIL);
+		String mobile = null;
+		if (username.contains("@")) {
 			email = username;
-		}
+		} else {
+			mobile = username;			
+		}		
         context.getEvent().detail(Details.USERNAME, username)
                 .detail(Details.REGISTER_METHOD, "form")
                 .detail(Details.EMAIL, email)
@@ -165,13 +168,13 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
 		logger.info("creo l'utente "+user.getUsername());
         user.setEnabled(true);
         user.setEmail(email);
+		List<String> attributes = new ArrayList();
+		attributes.add(mobile);
+		user.setAttribute("mobile", attributes);
 		if (email!=null) {
-			logger.info("all'utente "+user.getUsername()+" imposto la required action -> "+UserModel.RequiredAction.VERIFY_EMAIL);
 			user.addRequiredAction(UserModel.RequiredAction.VERIFY_EMAIL);
-			logger.info("all'utente "+user.getUsername()+" imposto la required action "+UserModel.RequiredAction.UPDATE_PASSWORD);
 			user.addRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD);
 		} else {
-			logger.info("all'utente "+user.getUsername()+" imposto la required action "+UserModel.RequiredAction.UPDATE_PASSWORD);
 			user.addRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD);
 		}
 
