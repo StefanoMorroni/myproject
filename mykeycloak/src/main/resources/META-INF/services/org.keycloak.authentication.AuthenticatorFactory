@@ -16,3 +16,4 @@
 #
 
 mykeycloak.authentication.authenticators.browser.AddSocialFormFactory
+mykeycloak.authentication.authenticators.browser.UsernamePasswordFormFactory
