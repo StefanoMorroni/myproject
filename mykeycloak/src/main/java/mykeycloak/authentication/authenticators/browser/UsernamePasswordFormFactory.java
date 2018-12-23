@@ -92,12 +92,12 @@ public class UsernamePasswordFormFactory implements AuthenticatorFactory, Displa
 
     @Override
     public String getDisplayType() {
-        return "Username Password Form";
+        return "My Username Password Form";
     }
 
     @Override
     public String getHelpText() {
-        return "Validates a username and password from login form.";
+        return "My Validates a username and password from login form.";
     }
 
     @Override

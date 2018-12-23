@@ -1,40 +1,37 @@
-<#import "template.ftl" as layout>
-<@layout.registrationLayout displayInfo=true; section>
-    <#if section = "header">
-        ${msg("updatePasswordTitle")}
-    <#elseif section = "form">
-        <form id="kc-passwd-update-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
-            <input type="text" id="username" name="username" value="${username}" autocomplete="username" readonly="readonly" style="display:none;"/>
-            <input type="password" id="password" name="password" autocomplete="current-password" style="display:none;"/>
-
-            <div class="${properties.kcFormGroupClass!}">
-                <div class="${properties.kcLabelWrapperClass!}">
-                    <label for="password-new" class="${properties.kcLabelClass!}">${msg("passwordNew")}</label>
-                </div>
-                <div class="${properties.kcInputWrapperClass!}">
-                    <input type="password" id="password-new" name="password-new" class="${properties.kcInputClass!}" autofocus autocomplete="new-password" />
-                </div>
+<#import "mytemplate.ftl" as layout>
+<@layout.registrationLayout; section>
+    <#if section = "form">
+        <div class="container">
+            <div class="header">
+                <img src="${url.resourcesPath}/img/tim-logo.svg">
+                <h2>TIM Business Account</h2>
             </div>
+            <div class="login-container">
+                <form id="kc-passwd-update-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
+                    <#if TDB??>
+                    <input type="password" id="password" name="password" autocomplete="current-password" style="display:none;"/>
 
-            <div class="${properties.kcFormGroupClass!}">
-                <div class="${properties.kcLabelWrapperClass!}">
-                    <label for="password-confirm" class="${properties.kcLabelClass!}">${msg("passwordConfirm")}</label>
-                </div>
-                <div class="${properties.kcInputWrapperClass!}">
-                    <input type="password" id="password-confirm" name="password-confirm" class="${properties.kcInputClass!}" autocomplete="new-password" />
-                </div>
-            </div>
+                    ${msg("loginUpdateMessage")?no_esc}
 
-            <div class="${properties.kcFormGroupClass!}">
-                <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
-                    <div class="${properties.kcFormOptionsWrapperClass!}">
+                    <div class="form-group">
+                        <input tabindex="1" id="username" class="form-control" name="username" type="text" autocomplete="username" readonly="readonly" />
                     </div>
-                </div>
+                    </#if>
 
-                <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
-                    <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("doSubmit")}"/>
-                </div>
+                    ${msg("loginUpdateMessage2")?no_esc}
+
+                    <div class="form-group">
+                        <input tabindex="2" id="password-new" class="form-control" name="password-new" type="password" autocomplete="off" placeholder="${msg("password")}" />
+                    </div>
+
+                    <div class="form-group">
+                        <input tabindex="3" id="password-confirm" class="form-control" name="password-confirm" type="password" autocomplete="off" placeholder="${msg("passwordConfirm")}" />
+                    </div>
+
+                    <input tabindex="4" class="btn btn-primary btn-block btn-login" name="login" id="kc-login" type="submit" value="Conferma Registrazione"/>
+
+                </form>
             </div>
-        </form>
+        </div>
     </#if>
 </@layout.registrationLayout>
