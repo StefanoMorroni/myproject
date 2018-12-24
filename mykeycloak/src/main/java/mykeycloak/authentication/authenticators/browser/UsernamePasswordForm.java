@@ -31,6 +31,7 @@ import org.keycloak.services.managers.AuthenticationManager;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import mykeycloak.utils.KeycloakModelUtils;
+import mykeycloak.utils.ValidatorUtil;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;
 import org.keycloak.events.Details;
@@ -74,7 +75,10 @@ public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator impl
 
         // remove leading and trailing whitespace
         username = username.trim();
-
+		if(ValidatorUtil.validateMobile(username)) {
+			username = ValidatorUtil.normalizeMobile(username);
+		}
+			
         context.getEvent().detail(Details.USERNAME, username);
         context.getAuthenticationSession().setAuthNote(AbstractUsernameFormAuthenticator.ATTEMPTED_USERNAME, username);
 

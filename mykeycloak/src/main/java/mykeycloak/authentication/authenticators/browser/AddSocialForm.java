@@ -16,7 +16,6 @@
  */
 package mykeycloak.authentication.authenticators.browser;
 
-import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 import org.keycloak.authentication.AuthenticationFlowContext;
@@ -28,8 +27,8 @@ import org.keycloak.models.UserModel;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import mykeycloak.utils.KeycloakModelUtils;
+import mykeycloak.utils.ValidatorUtil;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
@@ -46,7 +45,6 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.messages.Messages;
-import org.keycloak.sessions.AuthenticationSessionModel;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -110,7 +108,10 @@ public class AddSocialForm
 
 		// remove leading and trailing whitespace
 		username = username.trim();
-
+		if(ValidatorUtil.validateMobile(username)) {
+			username = ValidatorUtil.normalizeMobile(username);
+		}
+		
 		context.getEvent().detail(Details.USERNAME, username);
 		context.getAuthenticationSession().setAuthNote(AbstractUsernameFormAuthenticator.ATTEMPTED_USERNAME, username);
 
@@ -158,7 +159,7 @@ public class AddSocialForm
 			return false;
 		}
 
-		// oontrollo se l'utente ha già un account social
+		// controllo se l'utente ha già un account social
 		SerializedBrokeredIdentityContext serializedCtx = SerializedBrokeredIdentityContext.readFromAuthenticationSession(context.getAuthenticationSession(), AbstractIdpAuthenticator.BROKERED_CONTEXT_NOTE);
 		BrokeredIdentityContext brokeredIdentityContext = serializedCtx.deserialize(context.getSession(), context.getAuthenticationSession());
 
