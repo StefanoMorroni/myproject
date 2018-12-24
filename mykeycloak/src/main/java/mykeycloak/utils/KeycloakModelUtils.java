@@ -1,4 +1,4 @@
-package mykeycloak.models.utils;
+package mykeycloak.utils;
 
 import java.util.List;
 import org.keycloak.models.KeycloakSession;

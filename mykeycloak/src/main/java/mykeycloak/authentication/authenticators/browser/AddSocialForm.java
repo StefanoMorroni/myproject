@@ -27,7 +27,7 @@ import org.keycloak.models.UserModel;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import mykeycloak.models.utils.KeycloakModelUtils;
+import mykeycloak.utils.KeycloakModelUtils;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.keycloak.authentication.AuthenticationFlowError;
