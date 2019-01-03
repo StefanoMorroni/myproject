@@ -14,67 +14,78 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package mykeycloak.authentication.requiredactions;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import org.keycloak.authentication.RequiredActionContext;
 import org.keycloak.authentication.RequiredActionProvider;
-
-import javax.ws.rs.core.Response;
-import org.keycloak.authentication.AuthenticationFlowError;
-import org.keycloak.common.util.Time;
-import org.keycloak.credential.CredentialModel;
+import org.jboss.logging.Logger;
+import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.models.UserCredentialModel;
-import org.keycloak.models.UserModel;
+import mykeycloak.credential.MobileTokenCredentialProvider;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class VerifyMobileTokenRequiredAction implements RequiredActionProvider {
-    public static final String ID = "Verify Mobile Token";
 
-    @Override
-    public void evaluateTriggers(RequiredActionContext context) {
+	public static final String ID = "Verify Mobile Token";
+	private static final Logger logger = Logger.getLogger(VerifyMobileTokenRequiredAction.class);
 
-    }
+	@Override
+	public void evaluateTriggers(RequiredActionContext context) {
 
-    @Override
-    public void requiredActionChallenge(RequiredActionContext context) {
-		String token = "" + System.currentTimeMillis()%1000;
-		UserModel user = context.getAuthenticationSession().getAuthenticatedUser();
-		List<String> attributes = new ArrayList();
-		attributes.add(token);		
-		user.setAttribute("token", attributes);
-		
-        Response challenge = context.form()
+	}
+
+	@Override
+	public void requiredActionChallenge(RequiredActionContext context) {
+		String theToken = "" + System.currentTimeMillis() % 1000;
+		UserCredentialModel input = new UserCredentialModel();
+		input.setType(MobileTokenCredentialProvider.MOBILE_TOKEN);
+		input.setValue(theToken);
+		context.getSession().userCredentialManager().updateCredential(context.getRealm(), context.getUser(), input);
+		logger.info("ho generato il token " + theToken);
+
+		Response challenge = context.form()
 				.setAttribute("username", context.getAuthenticationSession().getAuthenticatedUser().getUsername())
 				.createForm("verify-mobile-token.ftl");
-        context.challenge(challenge);
-    }
+		context.challenge(challenge);
+	}
 
-    @Override
-    public void processAction(RequiredActionContext context) {
-        /*String answer = (context.getHttpRequest().getDecodedFormParameters().getFirst("secret_answer"));
-        UserCredentialModel input = new UserCredentialModel();
-        input.setType(MobileCodeCredentialProvider.SECRET_QUESTION);
-        input.setValue(answer);
-        context.getSession().userCredentialManager().updateCredential(context.getRealm(), context.getUser(), input);*/
+	@Override
+	public void processAction(RequiredActionContext context) {
 		try {
-			String answer = (context.getHttpRequest().getDecodedFormParameters().getFirst("token"));
-			if (!context.getUser().getAttribute("token").contains(answer)) {
+			String theToken = (context.getHttpRequest().getDecodedFormParameters().getFirst("token"));
+			UserCredentialModel input = new UserCredentialModel();
+			input.setType(MobileTokenCredentialProvider.MOBILE_TOKEN);
+			input.setValue(theToken);
+			if (!context.getSession().userCredentialManager().isValid(context.getRealm(), context.getUser(), input)) {				
 				throw new Exception("mobile token errato!!!");
 			}
 			context.success();
 		} catch (Exception e) {
-			context.failure();
+			logger.error(e.getMessage());
+			Response challenge = context.form()
+					.setError(e.getMessage())
+					.setAttribute("username", context.getAuthenticationSession().getAuthenticatedUser().getUsername())
+					.createForm("verify-mobile-token.ftl");
+			context.challenge(challenge);
 		}
-    }
+	}
 
-    @Override
-    public void close() {
+	protected boolean validateAnswer(AuthenticationFlowContext context) {
+		MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+		String theToken = formData.getFirst("secret_answer");
+		UserCredentialModel input = new UserCredentialModel();
+		input.setType(MobileTokenCredentialProvider.MOBILE_TOKEN);
+		input.setValue(theToken);
+		return context.getSession().userCredentialManager().isValid(context.getRealm(), context.getUser(), input);
+	}
 
-    }
+	@Override
+	public void close() {
+
+	}
 }
