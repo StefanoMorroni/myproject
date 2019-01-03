@@ -40,6 +40,7 @@ import org.keycloak.services.validation.Validation;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.List;
+import mykeycloak.authentication.requiredactions.VerifyMobileTokenRequiredAction;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
@@ -126,11 +127,11 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
 		List<String> attributes = new ArrayList();
 		attributes.add(mobile);
 		user.setAttribute("mobile", attributes);
+		user.addRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD);
 		if (email != null) {
 			user.addRequiredAction(UserModel.RequiredAction.VERIFY_EMAIL);
-			user.addRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD);
-		} else {
-			user.addRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD);
+		} else if (mobile != null) {
+			user.addRequiredAction(VerifyMobileTokenRequiredAction.ID);
 		}
 
 		context.getAuthenticationSession().setClientNote(OIDCLoginProtocol.LOGIN_HINT_PARAM, username);
