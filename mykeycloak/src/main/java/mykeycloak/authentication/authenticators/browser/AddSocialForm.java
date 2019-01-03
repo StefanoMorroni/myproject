@@ -176,14 +176,14 @@ public class AddSocialForm
 			}
 		}
 
-		/*String rememberMe = inputData.getFirst("rememberMe");
+		String rememberMe = inputData.getFirst("rememberMe");
 		boolean remember = rememberMe != null && rememberMe.equalsIgnoreCase("on");
 		if (remember) {
 			context.getAuthenticationSession().setAuthNote(Details.REMEMBER_ME, "true");
 			context.getEvent().detail(Details.REMEMBER_ME, "true");
 		} else {
 			context.getAuthenticationSession().removeAuthNote(Details.REMEMBER_ME);
-		}*/
+		}
 		context.setUser(user);
 		return true;
 	}
