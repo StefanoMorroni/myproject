@@ -7,10 +7,11 @@
                 <h2>TIM Business Account</h2>
             </div>
             <div class="login-container">
-                ${msg("emailVerifyInstruction1")?no_esc}
-                ${msg("emailVerifyInstruction2")?no_esc}
-                ${msg("emailVerifyInstruction3")?no_esc}
-                <a class="helper" href="${url.loginAction}">${msg("emailVerifyInstruction4")}</a>
+                    ${msg("emailVerifyInstruction1",username)?no_esc}
+                    <div class="text-muted" style="text-align:center">
+                            ${msg("emailVerifyInstruction3")?no_esc}
+                            <a class="text-muted" href="${url.loginRestartFlowUrl}">${msg("emailVerifyInstruction4")?no_esc}</a>
+                    </div>
             </div>
         </div>
     </#if>

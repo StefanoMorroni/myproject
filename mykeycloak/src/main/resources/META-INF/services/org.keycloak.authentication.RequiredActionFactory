@@ -16,3 +16,4 @@
 #
 
 mykeycloak.authentication.requiredactions.VerifyMobileTokenRequiredActionFactory
+mykeycloak.authentication.requiredactions.VerifyEmailRequiredActionFactory
