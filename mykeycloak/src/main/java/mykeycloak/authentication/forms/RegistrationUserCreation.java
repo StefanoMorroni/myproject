@@ -134,7 +134,6 @@ public class RegistrationUserCreation implements FormAction, FormActionFactory {
 		} else if (mobile != null) {
 			user.addRequiredAction(VerifyMobileTokenRequiredAction.ID);
 		}
-		}
 
 		context.getAuthenticationSession().setClientNote(OIDCLoginProtocol.LOGIN_HINT_PARAM, username);
 		AttributeFormDataProcessor.process(formData, context.getRealm(), user);
