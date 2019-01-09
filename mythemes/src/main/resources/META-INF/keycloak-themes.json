@@ -1,6 +1,6 @@
 {
     "themes": [{
         "name" : "mytheme",
-        "types": [ "login" ]
+        "types": [ "login", "account" ]
     }]
 }
