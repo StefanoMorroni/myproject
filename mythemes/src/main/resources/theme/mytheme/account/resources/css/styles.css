@@ -1,0 +1,172 @@
+@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+@font-face {
+    font-family: "TimSans";
+    font-style: normal;
+    font-weight: normal;
+    src: url('https://static.tim.it/font/TIMSans-Regular.otf') format("opentype"), url('https://static.tim.it/font/TIMSans-Regular.otf') format("truetype");
+}
+@font-face {
+    font-family: "TIMSans-Bold";
+    font-style: normal;
+    font-weight: normal;
+    src: url('https://static.tim.it/font/TIMSans-Bold.otf') format("opentype"), url('https://static.tim.it/font/TIMSans-Regular.otf') format("truetype");
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  color: #004990;
+  font-family: "TimSans";
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+}
+
+.footer a {
+  color: #004990;
+  font-size: 16px;
+}
+
+.btn {
+  border-radius: 0;
+}
+
+.container {
+  max-width: 555px;
+}
+
+.header {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.header img {
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 10px;
+}
+
+.header .help-icon, .header h2 {
+  display: inline-block;
+}
+
+.header h2 {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1.25;
+  font-family: "TimSans-Bold";
+}
+
+.header .help-icon {
+  width: 24px;
+  height: 24px;
+  line-height: 25px;
+  background-color: #004990;
+  color: white;
+  border-radius: 50%;
+  font-style: italic;
+  margin-left: 5px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.login-container {
+  box-shadow: 3px 5px 15px 0 rgba(0, 0, 0, 0.3);
+  padding: 40px 30px;
+  margin: 0 auto;
+}
+
+.login-container h4 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 16px;
+  line-height: 1.38;
+}
+
+.login-container .form-group {
+  margin-bottom: 20px;
+}
+
+.login-container .form-group input {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.login-container .btn-login {
+  background-color: #004990;
+  margin-bottom: 15px;
+}
+
+.login-container a.helper {
+  display: block;
+  font-size: 14px;
+}
+
+.login-container .strikethrough {
+  margin: 15px 0 20px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.login-container .strikethrough:before {
+  border-top: 2px solid #dfdfdf;
+  content: "";
+  margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 95%;
+  z-index: -1;
+}
+
+.login-container .strikethrough span {
+  background: #fff;
+  padding: 0 15px;
+}
+
+.login-container .btn-social {
+  display: block;
+  margin: 0 auto;
+  color: white;
+  font-size: 16px;
+  line-height: 1.25;
+  text-align: center;
+  position: relative;
+  padding: 10px;
+}
+
+.login-container .btn-social i {
+  position: absolute;
+  left: 20px;
+  font-size: 24px;
+  top: 50%;
+  margin-top: -12px;
+}
+
+.login-container .fb-login {
+  background-color: #3b5998;
+  margin-bottom: 20px;
+}
+
+.login-container .fb-login i {
+  left: 22px;
+}
+
+.login-container .gplus-login {
+  background-color: #dc4e41;
+}
