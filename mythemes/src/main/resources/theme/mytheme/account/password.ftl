@@ -1,59 +1,61 @@
-<#import "template.ftl" as layout>
-<@layout.mainLayout active='password' bodyClass='password'; section>
+<#import "mytemplate.ftl" as layout>
+<@layout.mainLayout; section>
 
-    <div class="row">
-        <div class="col-md-10">
-            <h2>${msg("changePasswordHtmlTitle")}</h2>
-        </div>
-        <div class="col-md-2 subtitle">
-            <span class="subtitle">${msg("allFieldsRequired")}</span>
-        </div>
+<div class="container">
+    <div class="header">
+            <img src="${url.resourcesPath}/img/tim-logo.svg">
+            <h2>TIM Business Account</h2>
     </div>
+    <div class="login-container">
+            <h4><strong>Modifica credenziali di accesso</strong></h4>
+            <form action="${url.accountUrl}" method="POST">     
+                    <input type="hidden" id="stateChecker" name="stateChecker" value="${stateChecker}" />
+                    <input type="hidden" id="username" name="username" value="${(account.username!'')}" />
+                    <input type="hidden" id="firstName" name="firstName" value="N/A" />
+                    <input type="hidden" id="lastName" name="lastName" value="N/A" />
+                    <div class="form-group">
+                            <h5>Modifica l'indirizzo e-mail</h5>
+                            <input id="email" name="email" placeholder="Indirizzo e-mail non specificato" type="text" class="form-control" value="${(account.email!'')}">
+                    </div>
 
-    <form action="${url.passwordUrl}" class="form-horizontal" method="post">
-        <input type="text" id="username" name="username" value="${(account.username!'')}" autocomplete="username" readonly="readonly" style="display:none;">
+                    <button type="submit" id="submit" class="btn btn-primary btn-block btn-login" name="submitAction" value="Save">Conferma la modifica della e-mail</button>
+            </form>
+            <form action="${url.accountUrl}" method="POST">
+                    <input type="hidden" id="stateChecker" name="stateChecker" value="${stateChecker}">
+                    <input type="hidden" id="username" name="username" value="${(account.username!'')}">
+                    <input type="hidden" id="firstName" name="firstName" value="N/A" />
+                    <input type="hidden" id="lastName" name="lastName" value="N/A" />
+                    <input type="hidden" id="email" name="email" value="${(account.email!'')}">
+                    <div class="form-group">
+                            <h5>Modifica il numero di cellulare</h5>
+                            <input id="user.attributes.mobile" name="user.attributes.mobile" class="form-control" placeholder="Numero di cellulare non specificato" type="text" value="${(account.attributes.mobile!'')}">
+                    </div>
 
-        <#if password.passwordSet>
-            <div class="form-group">
-                <div class="col-sm-2 col-md-2">
-                    <label for="password" class="control-label">${msg("password")}</label>
-                </div>
+                    <button type="submit" id="submit" class="btn btn-primary btn-block btn-login" name="submitAction" value="Save">Conferma la modifica del cellulare</button>
+            </form>
+            <form action="${url.passwordUrl}" method="POST">
+                    <input type="hidden" id="stateChecker" name="stateChecker" value="${stateChecker}">
+                    <div class="form-group">
+                            <h5>Modifica la password</h5>
+                            <div class="form-group">
+                                    <input id="password" name="password" class="form-control" placeholder="Password attuale" type="password" value="">
+                            </div>
+                            <div class="form-group">
+                                    <input id="password-new" name="password-new" class="form-control" placeholder="Nuova Password" type="password" value="">
+                            </div>
+                            <div class="form-group">
+                                    <input id="password-confirm" name="password-confirm" class="form-control" placeholder="Ripeti nuova Password" type="password" value="">
+                            </div>
+                    </div>
 
-                <div class="col-sm-10 col-md-10">
-                    <input type="password" class="form-control" id="password" name="password" autofocus autocomplete="current-password">
-                </div>
+                    <button type="submit" id="submit" class="btn btn-primary btn-block btn-login" name="submitAction" value="Save">Conferma la modifica della password</button>
+            </form>
+
+            <div style="text-align:center">
+                    <#if referrer?has_content && referrer.url?has_content><a href="${referrer.url}" id="referrer"><ins>Clicca qui per tornare alla pagina di provenienza</ins></a></#if>
             </div>
-        </#if>
 
-        <input type="hidden" id="stateChecker" name="stateChecker" value="${stateChecker}">
-
-        <div class="form-group">
-            <div class="col-sm-2 col-md-2">
-                <label for="password-new" class="control-label">${msg("passwordNew")}</label>
-            </div>
-
-            <div class="col-sm-10 col-md-10">
-                <input type="password" class="form-control" id="password-new" name="password-new" autocomplete="new-password">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-2 col-md-2">
-                <label for="password-confirm" class="control-label" class="two-lines">${msg("passwordConfirm")}</label>
-            </div>
-
-            <div class="col-sm-10 col-md-10">
-                <input type="password" class="form-control" id="password-confirm" name="password-confirm" autocomplete="new-password">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div id="kc-form-buttons" class="col-md-offset-2 col-md-10 submit">
-                <div class="">
-                    <button type="submit" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonLargeClass!}" name="submitAction" value="Save">${msg("doSave")}</button>
-                </div>
-            </div>
-        </div>
-    </form>
+    </div>
+</div>
 
 </@layout.mainLayout>

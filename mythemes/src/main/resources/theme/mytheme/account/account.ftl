@@ -1,70 +1,61 @@
-<#import "template.ftl" as layout>
-<@layout.mainLayout active='account' bodyClass='user'; section>
+<#import "mytemplate.ftl" as layout>
+<@layout.mainLayout; section>
 
-    <div class="row">
-        <div class="col-md-10">
-            <h2>${msg("editAccountHtmlTitle")}</h2>
-        </div>
-        <div class="col-md-2 subtitle">
-            <span class="subtitle"><span class="required">*</span> ${msg("requiredFields")}</span>
-        </div>
+<div class="container">
+    <div class="header">
+            <img src="${url.resourcesPath}/img/tim-logo.svg">
+            <h2>TIM Business Account</h2>
     </div>
+    <div class="login-container">
+            <h4><strong>Modifica credenziali di accesso</strong></h4>
+            <form action="${url.accountUrl}" method="POST">     
+                    <input type="hidden" id="stateChecker" name="stateChecker" value="${stateChecker}" />
+                    <input type="hidden" id="username" name="username" value="${(account.username!'')}" />
+                    <input type="hidden" id="firstName" name="firstName" value="N/A" />
+                    <input type="hidden" id="lastName" name="lastName" value="N/A" />
+                    <div class="form-group">
+                            <h5>Modifica l'indirizzo e-mail</h5>
+                            <input id="email" name="email" placeholder="Indirizzo e-mail non specificato" type="text" class="form-control" value="${(account.email!'')}">
+                    </div>
 
-    <form action="${url.accountUrl}" class="form-horizontal" method="post">
+                    <button type="submit" id="submit" class="btn btn-primary btn-block btn-login" name="submitAction" value="Save">Conferma la modifica della e-mail</button>
+            </form>
+            <form action="${url.accountUrl}" method="POST">
+                    <input type="hidden" id="stateChecker" name="stateChecker" value="${stateChecker}">
+                    <input type="hidden" id="username" name="username" value="${(account.username!'')}">
+                    <input type="hidden" id="firstName" name="firstName" value="N/A" />
+                    <input type="hidden" id="lastName" name="lastName" value="N/A" />
+                    <input type="hidden" id="email" name="email" value="${(account.email!'')}">
+                    <div class="form-group">
+                            <h5>Modifica il numero di cellulare</h5>
+                            <input id="user.attributes.mobile" name="user.attributes.mobile" class="form-control" placeholder="Numero di cellulare non specificato" type="text" value="${(account.attributes.mobile!'')}">
+                    </div>
 
-        <input type="hidden" id="stateChecker" name="stateChecker" value="${stateChecker}">
+                    <button type="submit" id="submit" class="btn btn-primary btn-block btn-login" name="submitAction" value="Save">Conferma la modifica del cellulare</button>
+            </form>
+            <form action="${url.passwordUrl}" method="POST">
+                    <input type="hidden" id="stateChecker" name="stateChecker" value="${stateChecker}">
+                    <div class="form-group">
+                            <h5>Modifica la password</h5>
+                            <div class="form-group">
+                                    <input id="password" name="password" class="form-control" placeholder="Password attuale" type="password" value="">
+                            </div>
+                            <div class="form-group">
+                                    <input id="password-new" name="password-new" class="form-control" placeholder="Nuova Password" type="password" value="">
+                            </div>
+                            <div class="form-group">
+                                    <input id="password-confirm" name="password-confirm" class="form-control" placeholder="Ripeti nuova Password" type="password" value="">
+                            </div>
+                    </div>
 
-        <#if !realm.registrationEmailAsUsername>
-            <div class="form-group ${messagesPerField.printIfExists('username','has-error')}">
-                <div class="col-sm-2 col-md-2">
-                    <label for="username" class="control-label">${msg("username")}</label> <#if realm.editUsernameAllowed><span class="required">*</span></#if>
-                </div>
+                    <button type="submit" id="submit" class="btn btn-primary btn-block btn-login" name="submitAction" value="Save">Conferma la modifica della password</button>
+            </form>
 
-                <div class="col-sm-10 col-md-10">
-                    <input type="text" class="form-control" id="username" name="username" <#if !realm.editUsernameAllowed>disabled="disabled"</#if> value="${(account.username!'')}"/>
-                </div>
+            <div style="text-align:center">
+                    <#if referrer?has_content && referrer.url?has_content><a href="${referrer.url}" id="referrer"><ins>Clicca qui per tornare alla pagina di provenienza</ins></a></#if>
             </div>
-        </#if>
 
-        <div class="form-group ${messagesPerField.printIfExists('email','has-error')}">
-            <div class="col-sm-2 col-md-2">
-            <label for="email" class="control-label">${msg("email")}</label> <span class="required">*</span>
-            </div>
-
-            <div class="col-sm-10 col-md-10">
-                <input type="text" class="form-control" id="email" name="email" autofocus value="${(account.email!'')}"/>
-            </div>
-        </div>
-
-        <div class="form-group ${messagesPerField.printIfExists('firstName','has-error')}">
-            <div class="col-sm-2 col-md-2">
-                <label for="firstName" class="control-label">${msg("firstName")}</label> <span class="required">*</span>
-            </div>
-
-            <div class="col-sm-10 col-md-10">
-                <input type="text" class="form-control" id="firstName" name="firstName" value="${(account.firstName!'')}"/>
-            </div>
-        </div>
-
-        <div class="form-group ${messagesPerField.printIfExists('lastName','has-error')}">
-            <div class="col-sm-2 col-md-2">
-                <label for="lastName" class="control-label">${msg("lastName")}</label> <span class="required">*</span>
-            </div>
-
-            <div class="col-sm-10 col-md-10">
-                <input type="text" class="form-control" id="lastName" name="lastName" value="${(account.lastName!'')}"/>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div id="kc-form-buttons" class="col-md-offset-2 col-md-10 submit">
-                <div class="">
-                    <#if url.referrerURI??><a href="${url.referrerURI}">${kcSanitize(msg("backToApplication")?no_esc)}</a></#if>
-                    <button type="submit" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonLargeClass!}" name="submitAction" value="Save">${msg("doSave")}</button>
-                    <button type="submit" class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}" name="submitAction" value="Cancel">${msg("doCancel")}</button>
-                </div>
-            </div>
-        </div>
-    </form>
+    </div>
+</div>
 
 </@layout.mainLayout>
